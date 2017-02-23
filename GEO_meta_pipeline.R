@@ -1,6 +1,6 @@
 # GEO_meta_pipeline.R
 # C: Sep 15, 2016
-# M: Feb 16, 2017
+# M: Feb 23, 2017
 # A: Leandro Lima <leandro.lima@gladstone.ucsf.edu>
 
 # Usage: R --slave --file=GEO_meta_pipeline.R --args [GSE] [GPL] [optional: samples_info.csv] [results_dir] [tissue]
@@ -11,8 +11,12 @@
 
 # tail -n +2 tissue_dirs/$tissue/Hs_samples_info_$tissue.csv | cut -d, -f2,3 | sort | uniq | awk -F"," -v tissue=$tissue '{gsub(/"/, "", $0); print "R --slave --file=GEO_meta_pipeline.R --args  "$1" "$2" Hs_samples_final.csv tissue_dirs/"tissue" "tissue" > tissue_dirs/"tissue"/out1."$1"."$2".txt 2> tissue_dirs/"tissue"/out2."$1"."$2".txt &"}'
 
-source('~/Dropbox (Gladstone)/programming/R/GEO_meta_pipeline_functions.R')
-con <- dbConnect(SQLite(), '~/databases/GEOmetadb.sqlite')
+source('GEO_meta_pipeline_functions.R')
+
+# Downloading SQLite file for GEOmetadb
+if(!file.exists('GEOmetadb.sqlite')) getSQLiteFile(destdir = '.')
+
+con <- dbConnect(SQLite(), 'GEOmetadb.sqlite')
 
 GSE <- commandArgs(TRUE)[1]
 GPL <- commandArgs(TRUE)[2]
